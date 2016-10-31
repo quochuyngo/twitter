@@ -17,6 +17,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+         let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
+
+        if let data = UserDefaults.standard.object(forKey: KEYs.CURRENT_USER) as? Data{
+            let user = NSKeyedUnarchiver.unarchiveObject(with: data) as! User
+            User.currentUser = user
+            TwitterClient.shareInstance?.requestSerializer.saveAccessToken(user.accessToken!)
+            print(TwitterClient.shareInstance?.requestSerializer.accessToken.secret)
+            print(TwitterClient.shareInstance?.requestSerializer.accessToken.token)
+            let vc = storyboard.instantiateViewController(withIdentifier:"HomeTimeline")
+            let nc = UINavigationController(rootViewController: vc)
+            window?.rootViewController = nc
+        }
         return true
     }
 

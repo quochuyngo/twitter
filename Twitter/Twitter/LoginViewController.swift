@@ -8,7 +8,7 @@
 
 import UIKit
 import BDBOAuth1Manager
-
+import MBProgressHUD
 class LoginViewController: UIViewController {
 
     override func viewDidLoad() {
@@ -18,13 +18,18 @@ class LoginViewController: UIViewController {
     }
 
     @IBAction func onLoginButton(_ sender: AnyObject) {
-        let client = TwitterClient.shareInstance
-        client?.login(success: { () -> () in
-            print("logged in")
-            self.performSegue(withIdentifier: "SegueTimeLine", sender: self)
-        }){(error: Error) ->() in
-            Alert.showAlertMessage(userMessage: "Login Problem", vc: self)
-            print("\(error.localizedDescription)")
-        }
+         MBProgressHUD.showAdded(to: self.view, animated: true)
+        TwitterClient.shareInstance?.login(completion: { (user, error) -> () in
+            if error == nil{
+                print("logged in")
+                MBProgressHUD.hide(for: self.view, animated: true)
+                self.performSegue(withIdentifier: "SegueTimeLine", sender: self)
+            }
+            else{
+                Alert.showAlertMessage(userMessage: "Login Problem", vc: self)
+                print("\(error?.localizedDescription)")
+
+            }
+        })
     }
 }
